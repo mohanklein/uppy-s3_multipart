@@ -14,6 +14,7 @@ module Uppy
         @router.opts[:prefix]  = prefix
         @router.opts[:options] = options
         @router.opts[:content_disposition] = content_disposition
+        @router.opts[:key] = key
       end
 
       def call(env)
@@ -33,8 +34,9 @@ module Uppy
             filename     = r.params["filename"]
 
             extension = File.extname(filename.to_s)
-            key       = "#{opts[:key] || Time.now.to_i-SecureRandom.hex}.#{extension}"
-            key       = "#{opts[:prefix]}/#{key}" if opts[:prefix]
+            key = opts[:key] || Time.now.to_i.to_s + '-' + SecureRandom.hex
+            key = "#{opts[:prefix]}/#{key}" if opts[:prefix]
+            key = key.to_s + extension
 
             # CGI-escape the filename because aws-sdk's signature calculator trips on special characters
             content_disposition = "#{opts[:content_disposition]};"

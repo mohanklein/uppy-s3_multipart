@@ -43,7 +43,7 @@ module Uppy
           **options
         )
 
-        { location: object(key).presigned_url(:get) }
+        { location: object(key).public_url }
       end
 
       def abort_multipart_upload(upload_id:, key:, **options)
