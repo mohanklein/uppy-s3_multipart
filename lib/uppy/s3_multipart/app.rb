@@ -8,7 +8,7 @@ require "cgi"
 module Uppy
   module S3Multipart
     class App
-      def initialize(bucket:, prefix: nil, options: {})
+      def initialize(bucket:, prefix: nil, options: {}, content_disposition: 'attachment', key: nil)
         @router = Class.new(Router)
         @router.opts[:client]  = Client.new(bucket: bucket)
         @router.opts[:prefix]  = prefix
@@ -33,11 +33,11 @@ module Uppy
             filename     = r.params["filename"]
 
             extension = File.extname(filename.to_s)
-            key       = Time.now.to_i + '-' + SecureRandom.hex + extension
+            key       = "#{opts[:key] || Time.now.to_i-SecureRandom.hex}.#{extension}"
             key       = "#{opts[:prefix]}/#{key}" if opts[:prefix]
 
             # CGI-escape the filename because aws-sdk's signature calculator trips on special characters
-            content_disposition = "#{opts[:content_disposition] || 'inline'};"
+            content_disposition = "#{opts[:content_disposition]};"
             if filename
               content_disposition += " filename=\"#{CGI.escape(filename)}\""
             end
