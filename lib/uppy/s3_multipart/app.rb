@@ -13,6 +13,7 @@ module Uppy
         @router.opts[:client]  = Client.new(bucket: bucket)
         @router.opts[:prefix]  = prefix
         @router.opts[:options] = options
+        @router.opts[:content_disposition] = content_disposition
       end
 
       def call(env)
@@ -32,11 +33,14 @@ module Uppy
             filename     = r.params["filename"]
 
             extension = File.extname(filename.to_s)
-            key       = SecureRandom.hex + extension
+            key       = Time.now.to_i + '-' + SecureRandom.hex + extension
             key       = "#{opts[:prefix]}/#{key}" if opts[:prefix]
 
             # CGI-escape the filename because aws-sdk's signature calculator trips on special characters
-            content_disposition = "inline; filename=\"#{CGI.escape(filename)}\"" if filename
+            content_disposition = "#{opts[:content_disposition] || 'inline'};"
+            if filename
+              content_disposition += " filename=\"#{CGI.escape(filename)}\""
+            end
 
             result = client_call(:create_multipart_upload, key: key, content_type: content_type, content_disposition: content_disposition)
 
