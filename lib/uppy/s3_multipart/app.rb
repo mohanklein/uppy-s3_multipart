@@ -34,7 +34,7 @@ module Uppy
             filename     = r.params["filename"]
 
             extension = File.extname(filename.to_s)
-            key = opts[:key] || Time.now.to_i.to_s + '-' + SecureRandom.hex
+            key = opts[:key] || Time.now.to_i.to_s + '_' + SecureRandom.hex
             key = "#{opts[:prefix]}/#{key}" if opts[:prefix]
             key = key.to_s + extension
 
