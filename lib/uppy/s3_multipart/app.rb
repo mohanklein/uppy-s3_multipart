@@ -8,7 +8,7 @@ require "cgi"
 module Uppy
   module S3Multipart
     class App
-      def initialize(bucket:, prefix: nil, options: {}, content_disposition: 'attachment', key: nil)
+      def initialize(bucket:, prefix: nil, options: {})
         @router = Class.new(Router)
         @router.opts[:client]  = Client.new(bucket: bucket)
         @router.opts[:prefix]  = prefix
@@ -33,16 +33,11 @@ module Uppy
             content_type = r.params["type"]
             filename     = r.params["filename"]
 
-            extension = File.extname(filename.to_s)
-            key = opts[:key] || Time.now.to_i.to_s + '_' + SecureRandom.hex
+            key = Time.now.to_i.to_s + '_' + SecureRandom.hex + extension
             key = "#{opts[:prefix]}/#{key}" if opts[:prefix]
-            key = key.to_s + extension
 
             # CGI-escape the filename because aws-sdk's signature calculator trips on special characters
-            content_disposition = "#{opts[:content_disposition]};"
-            if filename
-              content_disposition += " filename=\"#{CGI.escape(filename)}\""
-            end
+            content_disposition += "attachment; filename=\"#{CGI.escape(filename)}\""
 
             result = client_call(:create_multipart_upload, key: key, content_type: content_type, content_disposition: content_disposition)
 
