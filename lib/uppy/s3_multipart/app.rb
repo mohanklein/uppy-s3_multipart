@@ -13,8 +13,6 @@ module Uppy
         @router.opts[:client]  = Client.new(bucket: bucket)
         @router.opts[:prefix]  = prefix
         @router.opts[:options] = options
-        @router.opts[:content_disposition] = content_disposition
-        @router.opts[:key] = key
       end
 
       def call(env)
