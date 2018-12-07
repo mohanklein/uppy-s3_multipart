@@ -36,7 +36,7 @@ module Uppy
             key = "#{opts[:prefix]}/#{key}" if opts[:prefix]
 
             # CGI-escape the filename because aws-sdk's signature calculator trips on special characters
-            content_disposition += "attachment; filename=\"#{CGI.escape(filename)}\""
+            content_disposition = "attachment; filename=\"#{CGI.escape(filename)}\""
 
             result = client_call(:create_multipart_upload, key: key, content_type: content_type, content_disposition: content_disposition)
 
