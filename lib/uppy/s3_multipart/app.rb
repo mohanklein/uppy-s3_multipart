@@ -31,6 +31,7 @@ module Uppy
             content_type = r.params["type"]
             filename     = r.params["filename"]
 
+            extension = File.extname(filename.to_s)
             key = Time.now.to_i.to_s + '_' + SecureRandom.hex + extension
             key = "#{opts[:prefix]}/#{key}" if opts[:prefix]
 
