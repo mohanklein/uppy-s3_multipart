@@ -38,7 +38,7 @@ module Uppy
             # CGI-escape the filename because aws-sdk's signature calculator trips on special characters
             content_disposition = "attachment; filename=\"#{CGI.escape(filename)}\""
 
-            result = client_call(:create_multipart_upload, key: key, content_type: content_type, content_disposition: content_disposition)
+            result = client_call(:create_multipart_upload, key: key, content_type: content_type, content_disposition: content_disposition, acl: 'private')
 
             { uploadId: result.fetch(:upload_id), key: result.fetch(:key) }
           end
@@ -98,7 +98,7 @@ module Uppy
           overrides = overrides.call(request) if overrides.respond_to?(:call)
 
           options = options.merge(overrides)
-
+          puts "options: #{options}"
           client.send(operation, **options)
         end
 
